@@ -1,45 +1,46 @@
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
-# Connection
-engine = create_engine(
-    "postgresql+psycopg2://postgres:binny905@localhost:5433/postgres"
-)
+# ===================================
+# PostgreSQL Connection
+# ===================================
 
-# Read Excel
+DATABASE_URL = "postgresql://postgres:binny905@localhost:5433/postgres"
+
+engine = create_engine(DATABASE_URL)
+
+# ===================================
+# Read Excel File
+# ===================================
+
 df = pd.read_excel("agent_call_data.xlsx")
 
-# Clean columns
-df.columns = (
-    df.columns
-    .str.strip()
-    .str.lower()
-    .str.replace(" ", "_")
-)
+# ===================================
+# Clean Column Names
+# ===================================
 
-# Explicitly drop/create
-with engine.connect() as conn:
-    conn.execute(text("DROP TABLE IF EXISTS public.call_metrics"))
-    conn.commit()
+df.columns = [
+    col.strip().lower().replace(" ", "_")
+    for col in df.columns
+]
 
-# Create table again
+# ===================================
+# ADD UNIQUE ID COLUMN
+# ===================================
+
+df.insert(0, "id", range(1, len(df) + 1))
+
+print(df.head())
+
+# ===================================
+# Upload To PostgreSQL
+# ===================================
+
 df.to_sql(
     "call_metrics",
     engine,
-    schema="public",
     if_exists="replace",
     index=False
 )
 
-print("Table created successfully!")
-
-# Verify immediately
-with engine.connect() as conn:
-    result = conn.execute(text("""
-        SELECT table_schema, table_name
-        FROM information_schema.tables
-        WHERE table_name='call_metrics'
-    """))
-
-    for row in result:
-        print(row)
+print("Excel Data Imported Successfully")

@@ -1,51 +1,31 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
 
-import pandas as pd
-from sqlalchemy import create_engine
+from config import Config
+
+from models.call_metrics_model import db
+
+from api.call_metrics_api import call_metrics_bp
 
 app = Flask(__name__)
+
+app.config.from_object(Config)
+
 CORS(app)
 
-# ==============================
-# PostgreSQL Connection
-# ==============================
+# Initialize Database
+db.init_app(app)
 
-DB_URL = "postgresql://postgres:binny905@localhost:5433/postgres"
+# Register API Blueprint
+app.register_blueprint(call_metrics_bp)
 
-engine = create_engine(DB_URL)
-
-# ==============================
-# Home API
-# ==============================
-
+# Home Route
 @app.route("/")
 def home():
     return {
         "message": "Backend Running Successfully"
     }
 
-# ==============================
-# Dashboard API
-# ==============================
-
-@app.route("/api/call-metrics")
-def call_metrics():
-
-    query = """
-        SELECT *
-        FROM call_metrics
-    """
-
-    df = pd.read_sql(query, engine)
-
-    data = df.to_dict(orient="records")
-
-    return jsonify(data)
-
-# ==============================
 # Run Server
-# ==============================
-
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
