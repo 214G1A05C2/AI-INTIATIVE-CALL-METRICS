@@ -1,30 +1,28 @@
 import React from "react";
 
-function DataTable({ data }) {
+function DataTable({ filteredCalls }) {
   return (
-    <div className="table-container">
+    <div className="chartCard">
+      <h2 className="chartTitle">Call Records</h2>
 
-      <h2>Call Metrics</h2>
-
-      <table>
+      <table className="dataTable">
         <thead>
           <tr>
-            <th>Month</th>
             <th>Clinic</th>
-            <th>User Request</th>
+            <th>Request</th>
+            <th>Month</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((row, index) => (
+          {filteredCalls.map((item, index) => (
             <tr key={index}>
-              <td>{row.month_name}</td>
-              <td>{row.clinic_name}</td>
-              <td>{row.user_request}</td>
+              <td>{item.clinic_name}</td>
+              <td>{item.user_request}</td>
+              <td>{item.month_name}</td>
             </tr>
           ))}
         </tbody>
-
       </table>
     </div>
   );

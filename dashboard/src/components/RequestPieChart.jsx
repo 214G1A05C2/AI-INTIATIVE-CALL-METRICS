@@ -2,46 +2,47 @@ import React from "react";
 import {
   PieChart,
   Pie,
-  Tooltip,
   Cell,
-  Legend
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884D8"
+const PIE_COLORS = [
+  "#2563EB",
+  "#10B981",
+  "#F59E0B",
+  "#8B5CF6",
+  "#06B6D4",
+  "#14B8A6",
 ];
 
-function RequestPieChart({ data }) {
-
+function RequestPieChart({ pieData }) {
   return (
-    <div className="chart-card">
-      <h2>Request Types</h2>
+    <div className="chartCard">
+      <h2 className="chartTitle">Calls by Request Type</h2>
 
-      <PieChart width={500} height={350}>
-        <Pie
-          data={data}
-          dataKey="count"
-          nameKey="user_request"
-          cx="50%"
-          cy="50%"
-          outerRadius={120}
-          label
-        >
-          {data.map((entry, index) => (
-            <Cell
-              key={index}
-              fill={COLORS[index % COLORS.length]}
-            />
-          ))}
-        </Pie>
+      <ResponsiveContainer width="100%" height={430}>
+        <PieChart>
+          <Pie
+            data={pieData}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={70}
+            outerRadius={120}
+          >
+            {pieData.map((entry, index) => (
+              <Cell
+                key={index}
+                fill={PIE_COLORS[index % PIE_COLORS.length]}
+              />
+            ))}
+          </Pie>
 
-        <Tooltip />
-        <Legend />
-      </PieChart>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 }
