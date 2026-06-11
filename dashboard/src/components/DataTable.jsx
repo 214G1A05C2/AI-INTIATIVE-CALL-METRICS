@@ -1,11 +1,26 @@
 import React from "react";
+import theme from "../theme";
 
 function DataTable({ filteredCalls }) {
   return (
-    <div className="chartCard">
-      <h2 className="chartTitle">Call Records</h2>
+    <div
+      className="chartCard"
+      style={{
+        background: theme.colors.surface,
+        borderRadius: theme.radius.md,
+        boxShadow: theme.shadows.card,
+        border: `1px solid ${theme.colors.border}`,
+        padding: "20px",
+      }}
+    >
+      <h2
+        className="chartTitle"
+        style={{ color: theme.colors.text }}
+      >
+        Call Records
+      </h2>
 
-      <table className="dataTable">
+      <table className="dataTable" style={{ width: "100%" }}>
         <thead>
           <tr>
             <th>Clinic</th>

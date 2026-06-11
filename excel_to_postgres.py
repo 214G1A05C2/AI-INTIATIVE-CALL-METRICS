@@ -1,40 +1,19 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-# ===================================
-# PostgreSQL Connection
-# ===================================
-
 DATABASE_URL = "postgresql://postgres:binny905@localhost:5433/postgres"
 
 engine = create_engine(DATABASE_URL)
 
-# ===================================
-# Read Excel File
-# ===================================
+# File is actually CSV content
+df = pd.read_csv("agent_call_data.xlsx")
 
-df = pd.read_excel("agent_call_data.xlsx")
-
-# ===================================
-# Clean Column Names
-# ===================================
+print(df.head())
 
 df.columns = [
     col.strip().lower().replace(" ", "_")
     for col in df.columns
 ]
-
-# ===================================
-# ADD UNIQUE ID COLUMN
-# ===================================
-
-df.insert(0, "id", range(1, len(df) + 1))
-
-print(df.head())
-
-# ===================================
-# Upload To PostgreSQL
-# ===================================
 
 df.to_sql(
     "call_metrics",

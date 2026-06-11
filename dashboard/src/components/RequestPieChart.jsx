@@ -1,48 +1,133 @@
 import React from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
   ResponsiveContainer,
-  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+  LabelList,
 } from "recharts";
+import theme from "../theme";
 
-const PIE_COLORS = [
-  "#2563EB",
-  "#10B981",
-  "#F59E0B",
-  "#8B5CF6",
-  "#06B6D4",
-  "#14B8A6",
-];
+function RequestPieChart({ filteredCalls = [] }) {
+  const requestMap = {};
 
-function RequestPieChart({ pieData }) {
+  filteredCalls.forEach((item) => {
+  const request =
+    item.primary_intent || "Unknown";
+
+  requestMap[request] =
+    (requestMap[request] || 0) + 1;
+});
+
+  const chartData = Object.keys(requestMap)
+    .map((key) => ({
+      name: key,
+      value: requestMap[key],
+    }))
+    .sort((a, b) => b.value - a.value);
+
+  const totalRequests = chartData.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
+
   return (
-    <div className="chartCard">
-      <h2 className="chartTitle">Calls by Request Type</h2>
+    <div
+      style={{
+        background: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        padding: "20px",
+        boxShadow: theme.shadows.card,
+        height: "100%",
+        border: `1px solid ${theme.colors.border}`,
+      }}
+    >
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "20px",
+          color: theme.colors.text,
+          fontWeight: "bold",
+        }}
+      >
+        Calls by Request Type
+      </h2>
 
-      <ResponsiveContainer width="100%" height={430}>
-        <PieChart>
-          <Pie
-            data={pieData}
+      <ResponsiveContainer
+        width="100%"
+        height={550}
+      >
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{
+            top: 10,
+            right: 60,
+            left: 200,
+            bottom: 10,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+
+          <XAxis type="number" />
+
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={190}
+            tick={{
+              fontSize: 12,
+            }}
+          />
+
+          <Tooltip
+            formatter={(value) => [
+              `${value} Calls`,
+              "Count",
+            ]}
+          />
+
+          <Bar
             dataKey="value"
-            nameKey="name"
-            innerRadius={70}
-            outerRadius={120}
+            radius={[0, 8, 8, 0]}
           >
-            {pieData.map((entry, index) => (
-              <Cell
-                key={index}
-                fill={PIE_COLORS[index % PIE_COLORS.length]}
-              />
-            ))}
-          </Pie>
+            <LabelList
+              dataKey="value"
+              position="right"
+            />
 
-          <Tooltip />
-          <Legend />
-        </PieChart>
+            {chartData.map(
+              (entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    theme.chartColors[
+                      index %
+                        theme.chartColors.length
+                    ]
+                  }
+                />
+              )
+            )}
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
+
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "15px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: theme.colors.text,
+        }}
+      >
+        Total Requests: {totalRequests}
+      </div>
     </div>
   );
 }
